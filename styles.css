@@ -1,0 +1,26 @@
+/*********************************************************************************/
+/*                                                                               */
+/*                 Feuille de style principale du site                           */
+/*                                                                               */
+/*   Date     | Version |    Auteur     | Nature de la modification              */
+/* 23/11/2015 |  1.0.0  | Domip         | Création                               */
+/*                                                                               */
+/*                                                                               */
+/*********************************************************************************/
+
+body { background-image: url('fond.jpg');font-family:verdana} 
+
+
+img  {border-width: 0px}
+
+/* table with border (internal and external)*/
+table {border: 1px solid blue;border-collapse: collapse; }
+
+/*
+table.tableau tr th {border: 1px solid blue;padding :5px;text-align: center;font-weight: bold}
+*/
+table tr td {border: 1px solid blue;padding :5px;text-align: left;}
+
+
+
+ 
