@@ -40,7 +40,7 @@ private $modBus;
 
 // constructor create the object and connect it to the regulator	
 function __construct($ipAddr,$port) {
-	$this->modBus=new ModBus(self::slaveAddress,'192.168.9.18',20108);
+	$this->modBus=new ModBus(self::slaveAddress,$ipAddr,$port);
 	
 	// diematic register definition
 	$this->diematicReg= array();
@@ -92,6 +92,30 @@ function __construct($ipAddr,$port) {
 	$this->diematicReg['TCALC_A']->addr=21;
 	$this->diematicReg['TCALC_A']->type=self::REAL10;
 	
+	$this->diematicReg['CONS_JOUR_B']=new StdClass();
+	$this->diematicReg['CONS_JOUR_B']->addr=23;
+	$this->diematicReg['CONS_JOUR_B']->type=self::REAL10;	
+
+	$this->diematicReg['CONS_NUIT_B']=new StdClass();
+	$this->diematicReg['CONS_NUIT_B']->addr=24;
+	$this->diematicReg['CONS_NUIT_B']->type=self::REAL10;			
+	
+	$this->diematicReg['CONS_ANTIGEL_B']=new StdClass();
+	$this->diematicReg['CONS_ANTIGEL_B']->addr=25;
+	$this->diematicReg['CONS_ANTIGEL_B']->type=self::REAL10;
+	
+	$this->diematicReg['MODE_B']=new StdClass();
+	$this->diematicReg['MODE_B']->addr=26;
+	$this->diematicReg['MODE_B']->type=self::BIT;
+	
+	$this->diematicReg['TEMP_AMB_B']=new StdClass();
+	$this->diematicReg['TEMP_AMB_B']->addr=27;
+	$this->diematicReg['TEMP_AMB_B']->type=self::REAL10;
+	
+	$this->diematicReg['TCALC_B']=new StdClass();
+	$this->diematicReg['TCALC_B']->addr=32;
+	$this->diematicReg['TCALC_B']->type=self::REAL10;
+
 	$this->diematicReg['CONS_ECS']=new StdClass();
 	$this->diematicReg['CONS_ECS']->addr=59;
 	$this->diematicReg['CONS_ECS']->type=self::REAL10;
@@ -289,42 +313,22 @@ while ($i<500){
 		
 		
 		
-		//get 20 registers starting at reg 3
-		$this->modBus->masterRx(self::regulatorAddress,3,20);
+		//get 63 registers starting at reg 1
+		$this->modBus->masterRx(self::regulatorAddress,1,63);
 		$this->log.=$this->modBus->log;
 		if ($this->modBus->status==0) {
 			$this->dataDecode($this->modBus->rxReg);
 		}
 		
-		//get 4 registers starting at reg 59
-		$this->modBus->masterRx(self::regulatorAddress,59,4);
+		//get 64 registers starting at reg 64
+		$this->modBus->masterRx(self::regulatorAddress,64,64);
+		//$this->modBus->masterRx(self::regulatorAddress,59,4);
 		$this->log.=$this->modBus->log;
 		if ($this->modBus->status==0) {
 			$this->dataDecode($this->modBus->rxReg);
 		}
-		
-		//get 2 registers starting at reg 75
-		$this->modBus->masterRx(self::regulatorAddress,75,2);
-		$this->log.=$this->modBus->log;
-		if ($this->modBus->status==0) {
-			$this->dataDecode($this->modBus->rxReg);
-		}
-		
-		//get 8 registers starting at reg 89
-		$this->modBus->masterRx(self::regulatorAddress,89,8);
-		$this->log.=$this->modBus->log;
-		if ($this->modBus->status==0) {
-			$this->dataDecode($this->modBus->rxReg);
-		}
-
-		//get 4 registers starting at reg 108
-		$this->modBus->masterRx(self::regulatorAddress,108,3);
-		$this->log.=$this->modBus->log;
-		if ($this->modBus->status==0) {
-			$this->dataDecode($this->modBus->rxReg);
-		}	
 	
-		//get 10 registers starting at reg 456
+		//get 15 registers starting at reg 456
 		$this->modBus->masterRx(self::regulatorAddress,456,15);
 		$this->log.=$this->modBus->log;
 		if ($this->modBus->status==0) {
