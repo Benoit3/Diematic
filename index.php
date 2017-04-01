@@ -51,8 +51,8 @@ else if ($action=='Valider Temp') {
 //request data synchro
 $regulator->synchro();
 
-if ($view=="page2") echo get_include_contents("page2.ihm.php",$regulator->diematicReg);
-else echo get_include_contents("page.ihm.php",$regulator->diematicReg);
+if ($view=="param") echo get_include_contents("param_A.ihm.php",$regulator->diematicReg);
+else echo get_include_contents("ctrl_A.ihm.php",$regulator->diematicReg);
 
 if ($log==1) echo "<PRE>",$regulator->log,"</PRE>";		
 		
