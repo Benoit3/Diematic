@@ -28,8 +28,9 @@
 	<tr><td>Alarme</td>
 		<?= (($data['ALARME']->value!=0) ? '<td style="color:red" >' : '<td>')  ?>
 		<?=$data['ALARME']->value?>
-		<?= (($data['ALARME']->value==10) ? '<br/> Defaut Sonde Retour' : '')  ?>
+		<?= (($data['ALARME']->value==10) ? '<br/> Défaut Sonde Retour' : '')  ?>
 		<?= (($data['ALARME']->value==21) ? '<br/> Pression d\'eau basse' : '')  ?>
+		<?= (($data['ALARME']->value==26) ? '<br/> Défaut Allumage' : '')  ?>
 		<?= (($data['ALARME']->value==28) ? '<br/> STB Chaudière' : '')  ?>
 		</td>
 	</tr>
