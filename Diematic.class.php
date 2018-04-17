@@ -228,40 +228,62 @@ while ($i<500){
 		$this->log.="Index:".$i." Bus Status : Master \n";
 		
 		//get ANTIICE day number
-		//$this->modBus->masterRx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']->addr,1);
-		//$this->log.=$this->modBus->log;
-		//if ($this->modBus->status==0) {
-		//	$this->dataDecode($this->modBus->rxReg);
-		//}
+		$this->modBus->masterRx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']->addr,1);
+		$this->log.=$this->modBus->log;
+		if ($this->modBus->status==0) {
+			$this->dataDecode($this->modBus->rxReg);
+		}
 
-		//if a register need to be updated
+		//Parameters setting
 
-		//mode setting
-		if (isset($this->diematicReg['MODE_A']->set) ) {
-		
-			//varring requested mode
-			if ($this->diematicReg['MODE_A']->set!=self::ANTIICE) {
-				
-				//bug work around, to allow remote control update, uncomment 4 next code lines
-				//$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;
-				//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
-				//$this->log.=$this->modBus->log;
-				//unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);				
-				
-				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);
-				$this->log.=$this->modBus->log;
-				unset($this->diematicReg['MODE_A']->set);
-				
-				//$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;
-				//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
-				//$this->log.=$this->modBus->log;
-				//unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
-		
-			} else {
+		//mode setting, available is ANTIICE status is known, and mode setting requested
+		if (isset($this->diematicReg['NB_JOUR_ANTIGEL']->value) && isset($this->diematicReg['MODE_A']->set)) {
+
+			//if anti ice day number is not equal to zero
+			if ($this->diematicReg['NB_JOUR_ANTIGEL']->value != 0) {
+
+				//update antiice day number
 				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
 				$this->log.=$this->modBus->log;
-				unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);		
+
+				//if anti ice has been cancelled
+				if  ($this->diematicReg['NB_JOUR_ANTIGEL']->set==0) {
+					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);
+					$this->log.=$this->modBus->log;
+				}
+
+				unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
+				unset($this->diematicReg['MODE_A']->set);
+
 			}
+			else {
+
+				//varring requested mode
+				if ($this->diematicReg['MODE_A']->set!=self::ANTIICE) {
+
+					//bug work around, to allow remote control update, uncomment 4 next code lines
+					//$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;
+					//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+					//$this->log.=$this->modBus->log;
+					//unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
+
+					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);
+					$this->log.=$this->modBus->log;
+					unset($this->diematicReg['MODE_A']->set);
+
+					//$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;
+					//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+					//$this->log.=$this->modBus->log;
+					//unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
+
+				} else {
+					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+					$this->log.=$this->modBus->log;
+					unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
+				}
+
+			}
+
 		}
 		
 		//time setting
@@ -365,7 +387,7 @@ function setMode($mode,$nb_jour_antigel,$mode_ecs) {
 		//set ecs mode
 		$this->diematicReg['MODE_A']->set=$mode & 0x2F;
 		//if day number not in [1 -> 99] set it to 1
-		if ( ($nb_jour_antigel <0) || ($nb_jour_antigel >=99) ) $nb_jour_antigel=0;
+		if ( ($nb_jour_antigel <1) || ($nb_jour_antigel >=99) ) $nb_jour_antigel=1;
 		$this->diematicReg['NB_JOUR_ANTIGEL']->set=$nb_jour_antigel;
 	}
 
