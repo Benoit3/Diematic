@@ -261,20 +261,9 @@ while ($i<500){
 				//varring requested mode
 				if ($this->diematicReg['MODE_A']->set!=self::ANTIICE) {
 
-					//bug work around, to allow remote control update, uncomment 4 next code lines
-					//$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;
-					//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
-					//$this->log.=$this->modBus->log;
-					//unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
-
 					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);
 					$this->log.=$this->modBus->log;
 					unset($this->diematicReg['MODE_A']->set);
-
-					//$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;
-					//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
-					//$this->log.=$this->modBus->log;
-					//unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
 
 				} else {
 					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
