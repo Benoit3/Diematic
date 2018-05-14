@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Chauffage</title>
+<title>Chauffage Circuit A</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="styles.css" type="text/css">
@@ -12,6 +12,7 @@
 
 <h1>Chauffage</h1>
 <form method="post" action="">
+<input type="hidden" name="circuit" value="A">
 <?php $tableJours=array(1 =>'Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'); ?>
 <table>
 	<tr><td>Date</td><td><?=$tableJours[$data['JOUR_SEMAINE']->value]?> <?=$data['JOUR']->value?>/<?=sprintf("%02d",$data['MOIS']->value)?>/<?=sprintf("%02d",$data['ANNEE']->value)?> <?=sprintf("%02d",$data['HEURE']->value)?>:<?=sprintf("%02d",$data['MINUTE']->value)?></td></tr>
@@ -66,7 +67,7 @@
 	</td></tr>
 </table>
 </form>
-<p><a href="index.php?view=param">Paramètres</a></p> 
+<p><a href="index.php?view=param&circuit=A">Paramètres</a></p> 
 </body>
 </html>
 

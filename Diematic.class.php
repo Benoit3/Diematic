@@ -156,6 +156,13 @@ function __construct($ipAddr,$port) {
 	$this->diematicReg['ALARME']->addr=465;
 	$this->diematicReg['ALARME']->type=self::BIT;
 		
+	$this->diematicReg['QQ']=new StdClass();
+	$this->diematicReg['QQ']->addr=279;
+	$this->diematicReg['QQ']->type=self::INTEGER;
+
+	$this->diematicReg['MM']=new StdClass();
+	$this->diematicReg['MM']->addr=280;
+	$this->diematicReg['MM']->type=self::INTEGER;
 	
 	$this->log.="Connexion Status: ".$this->modBus->status."\n";
 	
@@ -226,53 +233,58 @@ while ($i<500){
 	else {
 		//log
 		$this->log.="Index:".$i." Bus Status : Master \n";
-		
-		//get ANTIICE day number
-		$this->modBus->masterRx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']->addr,1);
-		$this->log.=$this->modBus->log;
-		if ($this->modBus->status==0) {
-			$this->dataDecode($this->modBus->rxReg);
-		}
+
 
 		//Parameters setting
+		//mode A setting
+		if (isset($this->diematicReg['MODE_A']->set)) {
 
-		//mode setting, available is ANTIICE status is known, and mode setting requested
-		if (isset($this->diematicReg['NB_JOUR_ANTIGEL']->value) && isset($this->diematicReg['MODE_A']->set)) {
+			//varring requested mode
+			if ($this->diematicReg['MODE_A']->set!=self::ANTIICE) {
 
-			//if anti ice day number is not equal to zero
-			if ($this->diematicReg['NB_JOUR_ANTIGEL']->value != 0) {
+				//workaround if mode change is not reported on remote control : uncomment 3 following lines
+				//$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;
+				//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+				//$this->log.=$this->modBus->log;
 
-				//update antiice day number
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);
+				$this->log.=$this->modBus->log;
+				
+				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;
 				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
 				$this->log.=$this->modBus->log;
 
-				//if anti ice has been cancelled
-				if  ($this->diematicReg['NB_JOUR_ANTIGEL']->set==0) {
-					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);
-					$this->log.=$this->modBus->log;
-				}
+			} else {
 
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+				$this->log.=$this->modBus->log;
+			}
+
+		}
+
+		//mode setting, available is ANTIICE status is known, and mode setting requested
+		if (isset($this->diematicReg['MODE_B']->set)) {
+
+			//varring requested mode
+			if ($this->diematicReg['MODE_B']->set!=self::ANTIICE) {
+
+				//workaround if mode change is not reported on remote control : uncomment 3 following lines
+				//$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;
+				//$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+				//$this->log.=$this->modBus->log;
+
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_B']);
+				$this->log.=$this->modBus->log;
+
+				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+				$this->log.=$this->modBus->log;
+
+			} else {
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
+				$this->log.=$this->modBus->log;
 				unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
-				unset($this->diematicReg['MODE_A']->set);
-
 			}
-			else {
-
-				//varring requested mode
-				if ($this->diematicReg['MODE_A']->set!=self::ANTIICE) {
-
-					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);
-					$this->log.=$this->modBus->log;
-					unset($this->diematicReg['MODE_A']->set);
-
-				} else {
-					$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);
-					$this->log.=$this->modBus->log;
-					unset($this->diematicReg['NB_JOUR_ANTIGEL']->set);
-				}
-
-			}
-
 		}
 		
 		//time setting
@@ -314,6 +326,19 @@ while ($i<500){
 			unset($this->diematicReg['CONS_ANTIGEL_A']->set);
 			unset($register);
 		}
+
+		if (isset($this->diematicReg['CONS_JOUR_B']->set)) {
+			$register=array();
+			$register[0]=$this->diematicReg['CONS_JOUR_B'];
+			$register[1]=$this->diematicReg['CONS_NUIT_B'];
+			$register[2]=$this->diematicReg['CONS_ANTIGEL_B'];
+			$this->modBus->masterTxN(self::regulatorAddress,$register);
+			$this->log.=$this->modBus->log;
+			unset($this->diematicReg['CONS_JOUR_B']->set);
+			unset($this->diematicReg['CONS_NUIT_B']->set);
+			unset($this->diematicReg['CONS_ANTIGEL_B']->set);
+			unset($register);
+		}
 		
 		//ecs temperature setting
 		if (isset($this->diematicReg['CONS_ECS']->set)) {
@@ -345,6 +370,30 @@ while ($i<500){
 		if ($this->modBus->status==0) {
 			$this->dataDecode($this->modBus->rxReg);
 		}
+
+		//get 64 registers starting at reg 128
+		$this->modBus->masterRx(self::regulatorAddress,128,64);
+		//$this->modBus->masterRx(self::regulatorAddress,59,4);
+		$this->log.=$this->modBus->log;
+		if ($this->modBus->status==0) {
+			$this->dataDecode($this->modBus->rxReg);
+		}
+
+		//get 64 registers starting at reg 196
+		$this->modBus->masterRx(self::regulatorAddress,196,64);
+		//$this->modBus->masterRx(self::regulatorAddress,59,4);
+		$this->log.=$this->modBus->log;
+		if ($this->modBus->status==0) {
+			$this->dataDecode($this->modBus->rxReg);
+		}
+
+		//get 64 registers starting at reg 256
+		$this->modBus->masterRx(self::regulatorAddress,256,64);
+		//$this->modBus->masterRx(self::regulatorAddress,59,4);
+		$this->log.=$this->modBus->log;
+		if ($this->modBus->status==0) {
+			$this->dataDecode($this->modBus->rxReg);
+		}
 	
 		//get 15 registers starting at reg 456
 		$this->modBus->masterRx(self::regulatorAddress,456,15);
@@ -365,7 +414,7 @@ while ($i<500){
 }
 	
 // function used to new value of mode register
-function setMode($mode,$nb_jour_antigel,$mode_ecs) {
+function setModeA($mode,$nb_jour_antigel,$mode_ecs) {
 	//if the mode value is OK, prepare the register to be updated 
 	if ( ($mode==self::TEMP_DAY) || ($mode==self::TEMP_NIGHT) || ($mode==self::AUTO) || ($mode==self::PERM_DAY) || ($mode==self::PERM_NIGHT)) {
 		$this->diematicReg['MODE_A']->set=($mode & 0x2F | $mode_ecs & 0x50);
@@ -376,15 +425,33 @@ function setMode($mode,$nb_jour_antigel,$mode_ecs) {
 		//set ecs mode
 		$this->diematicReg['MODE_A']->set=$mode & 0x2F;
 		//if day number not in [1 -> 99] set it to 1
-		if ( ($nb_jour_antigel <1) || ($nb_jour_antigel >=99) ) $nb_jour_antigel=1;
+		if ( ($nb_jour_antigel <1) || ($nb_jour_antigel >99) ) $nb_jour_antigel=1;
 		$this->diematicReg['NB_JOUR_ANTIGEL']->set=$nb_jour_antigel;
 	}
 
 	$this->log.="Mode :" . $this->diematicReg['MODE_A']->set." Nb Jours Antigel :" .$this->diematicReg['NB_JOUR_ANTIGEL']->set. "\n";
 }
 
+function setModeB($mode,$nb_jour_antigel,$mode_ecs) {
+	//if the mode value is OK, prepare the register to be updated 
+	if ( ($mode==self::TEMP_DAY) || ($mode==self::TEMP_NIGHT) || ($mode==self::AUTO) || ($mode==self::PERM_DAY) || ($mode==self::PERM_NIGHT)) {
+		$this->diematicReg['MODE_B']->set=($mode & 0x2F | $mode_ecs & 0x50);
+		$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;
+	}
+	//if the selected mode is ANTIICE, if the $nb_jour_antigel value is OK
+	else if  ($mode==self::ANTIICE) {
+		//set ecs mode
+		$this->diematicReg['MODE_B']->set=$mode & 0x2F;
+		//if day number not in [1 -> 99] set it to 1
+		if ( ($nb_jour_antigel <1) || ($nb_jour_antigel >100) ) $nb_jour_antigel=1;
+		$this->diematicReg['NB_JOUR_ANTIGEL']->set=$nb_jour_antigel;
+	}
+
+	$this->log.="Mode :" . $this->diematicReg['MODE_B']->set." Nb Jours Antigel :" .$this->diematicReg['NB_JOUR_ANTIGEL']->set. "\n";
+}
+
 //function used to set Temperature
-function setTemp($day,$night,$antiIce) {
+function setTempA($day,$night,$antiIce) {
 	//day temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
 	$this->diematicReg['CONS_JOUR_A']->set=min(max(intval(2*$day)*5,100),300);	
 	//night temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
@@ -392,6 +459,16 @@ function setTemp($day,$night,$antiIce) {
 	//anti ice temperature, between 0,5 and 20°C, step is 0,5°C, unit is 0.1
 	$this->diematicReg['CONS_ANTIGEL_A']->set=min(max(intval(2*$antiIce)*5,5),200);
 }
+
+function setTempB($day,$night,$antiIce) {
+	//day temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
+	$this->diematicReg['CONS_JOUR_B']->set=min(max(intval(2*$day)*5,100),300);	
+	//night temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
+	$this->diematicReg['CONS_NUIT_B']->set=min(max(intval(2*$night)*5,100),300);
+	//anti ice temperature, between 0,5 and 20°C, step is 0,5°C, unit is 0.1
+	$this->diematicReg['CONS_ANTIGEL_B']->set=min(max(intval(2*$antiIce)*5,5),200);
+}
+
 
 //function used to set Temperature
 function setEcsTemp($day,$night) {
