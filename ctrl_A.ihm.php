@@ -33,6 +33,8 @@
 		<?= (($data['ALARME']->value==21) ? '<br/> Pression d\'eau basse' : '')  ?>
 		<?= (($data['ALARME']->value==26) ? '<br/> Défaut Allumage' : '')  ?>
 		<?= (($data['ALARME']->value==28) ? '<br/> STB Chaudière' : '')  ?>
+		<?= (($data['ALARME']->value==30) ? '<br/> Rearm. Coffret' : '')  ?>
+		<?= (($data['ALARME']->value==31) ? '<br/> Défaut Sonde Fumée' : '')  ?>
 		</td>
 	</tr>
 
