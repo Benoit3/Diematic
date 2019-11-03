@@ -3,8 +3,8 @@
 //               This class allow to acces to the regulator Diematic             //
 //               of De Dietrich boiler using a TCP/RS485 convertor               //
 //                                                                               //
-//	Licence :  Creative Commons  Attribution - Pas d’Utilisation Commerciale     //
-//              Partage dans les Mêmes Conditions 3.0 France (CC BY-NC-SA 3.0 FR)//
+//	Licence :  Creative Commons  Attribution - Pas d'Utilisation Commerciale     //
+//              Partage dans les MÃªmes Conditions 3.0 France (CC BY-NC-SA 3.0 FR)//
 //                                                                               //
 //                                                                               //
 //   Date     | Version |    Auteur     | Nature de la modification              //
@@ -33,7 +33,7 @@ class Diematic
 	const PERM_NIGHT=2;
 	const ANTIICE=1;
 	
-//log des échanges
+//log des Ã©changes
 public $log="";
 // status to remember if the regulator is connected
 private $modBus;
@@ -452,29 +452,29 @@ function setModeB($mode,$nb_jour_antigel,$mode_ecs) {
 
 //function used to set Temperature
 function setTempA($day,$night,$antiIce) {
-	//day temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
+	//day temperature, between 10 and 30Â°C, step is 0,5Â°C, unit is 0.1
 	$this->diematicReg['CONS_JOUR_A']->set=min(max(intval(2*$day)*5,100),300);	
-	//night temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
+	//night temperature, between 10 and 30Â°C, step is 0,5Â°C, unit is 0.1
 	$this->diematicReg['CONS_NUIT_A']->set=min(max(intval(2*$night)*5,100),300);
-	//anti ice temperature, between 0,5 and 20°C, step is 0,5°C, unit is 0.1
+	//anti ice temperature, between 0,5 and 20Â°C, step is 0,5Â°C, unit is 0.1
 	$this->diematicReg['CONS_ANTIGEL_A']->set=min(max(intval(2*$antiIce)*5,5),200);
 }
 
 function setTempB($day,$night,$antiIce) {
-	//day temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
+	//day temperature, between 10 and 30Â°C, step is 0,5Â°C, unit is 0.1
 	$this->diematicReg['CONS_JOUR_B']->set=min(max(intval(2*$day)*5,100),300);	
-	//night temperature, between 10 and 30°C, step is 0,5°C, unit is 0.1
+	//night temperature, between 10 and 30Â°C, step is 0,5Â°C, unit is 0.1
 	$this->diematicReg['CONS_NUIT_B']->set=min(max(intval(2*$night)*5,100),300);
-	//anti ice temperature, between 0,5 and 20°C, step is 0,5°C, unit is 0.1
+	//anti ice temperature, between 0,5 and 20Â°C, step is 0,5Â°C, unit is 0.1
 	$this->diematicReg['CONS_ANTIGEL_B']->set=min(max(intval(2*$antiIce)*5,5),200);
 }
 
 
 //function used to set Temperature
 function setEcsTemp($day,$night) {
-	//day temperature, between 10 and 80°C, step is 5°C, unit is 0.1
+	//day temperature, between 10 and 80Â°C, step is 5Â°C, unit is 0.1
 	$this->diematicReg['CONS_ECS']->set=min(max(intval($day/5)*50,100),800);	
-	//night temperature, between 10 and 80°C, step is 5°C, unit is 0.1
+	//night temperature, between 10 and 80Â°C, step is 5Â°C, unit is 0.1
 	$this->diematicReg['CONS_ECS_NUIT']->set=min(max(intval($night/5)*50,100),800);
 }
 
@@ -483,7 +483,7 @@ function setTime() {
 	//if the mode value is OK, prepare the register to be updated 
 	$tempsUnix=time();
 	
-	//initialise l'horloge de la régulation avec l'heure système
+	//initialise l'horloge de la rÃ©gulation avec l'heure systÃ¨me
 	$this->diematicReg['HEURE']->set=0xFF00 | date('H',$tempsUnix);
 	$this->diematicReg['MINUTE']->set=0xFF00 | date('i',$tempsUnix);
 	$this->diematicReg['JOUR_SEMAINE']->set=0xFF00 | date('N',$tempsUnix);
