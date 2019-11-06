@@ -49,9 +49,8 @@
 				<option value="1"  <?= ((($data['MODE_B']->value&0x2F)==1) ? "SELECTED" : "") ?> >ANTIGEL</option>
 			</select>
 	</td></tr>
-	<tr><td>Durée Antigel</td><td>
-			<input type="number" name="nb_jour_antigel" min="0" max="99" value="<?=$data['NB_JOUR_ANTIGEL']->value ?>">
-	</td></tr>
+	<?= (($data['MODE_B']->value&0x2F)==1 &&  ($data['NB_JOUR_ANTIGEL']->value > 0) ?  '<tr><td>Durée Antigel</td><td>'.$data['NB_JOUR_ANTIGEL']->value.'</td></tr>': "")  ?>
+
 	
 	<tr><td>Mode ECS</td><td>
 			<select name="mode_ecs">

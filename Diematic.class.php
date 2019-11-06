@@ -238,11 +238,10 @@ while ($i<500){
 		//mode A setting
 		if (isset($this->diematicReg['MODE_A']->set)) {
 			//set the new mode
-			//workaround for display on remote and activation of antiice: Mode command is surrounded with two setting of antiice day number ( 1 and 0)
-			if ($this->diematicReg['MODE_A']->set & self::ANTIICE ==self::ANTIICE) {
+			//workaround to warranty activation of permanent antiice
+			if ($this->diematicReg['MODE_A']->set==self::ANTIICE) {
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
-				usleep(100000);
 			}
 			$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);$this->log.=$this->modBus->log;
 		}
@@ -250,11 +249,10 @@ while ($i<500){
 		//mode B setting
 		if (isset($this->diematicReg['MODE_B']->set)) {
 			//set the new mode
-			//workaround for display on remote and activation of antiice: Mode command is surrounded with two setting of antiice day number ( 1 and 0)
+			//workaround to warranty activation of permanent antiice
 			if ($this->diematicReg['MODE_B']->set & self::ANTIICE ==self::ANTIICE) {
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
-				usleep(100000);
 			}
 			$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_B']);$this->log.=$this->modBus->log;
 		}
@@ -396,12 +394,6 @@ function setModeA($mode,$nb_jour_antigel,$mode_ecs) {
 	else if  ($mode==self::ANTIICE) {
 		//set  mode
 		$this->diematicReg['MODE_A']->set=($mode & 0x2F | $mode_ecs & 0x50);
-		//if day number not in [1 -> 99] set it to 0 and permanent mode
-		if ( ($nb_jour_antigel <1) || ($nb_jour_antigel >99) ) {
-			$nb_jour_antigel=0;
-			$this->diematicReg['MODE_A']->set|=0x20;
-		}
-		else $this->diematicReg['NB_JOUR_ANTIGEL']->set=$nb_jour_antigel;
 	}
 
 	$this->log.="Mode A :" . $this->diematicReg['MODE_A']->set." Nb Jours Antigel :" .$this->diematicReg['NB_JOUR_ANTIGEL']->set. "\n";
@@ -417,12 +409,6 @@ function setModeB($mode,$nb_jour_antigel,$mode_ecs) {
 	else if  ($mode==self::ANTIICE) {
 		//set  mode
 		$this->diematicReg['MODE_B']->set=($mode & 0x2F | $mode_ecs & 0x50);
-		//if day number not in [1 -> 99] set it to 0 and permanent mode
-		if ( ($nb_jour_antigel <1) || ($nb_jour_antigel >99) ) {
-			$nb_jour_antigel=0;
-			$this->diematicReg['MODE_B']->set|=0x20;
-		}
-		else $this->diematicReg['NB_JOUR_ANTIGEL']->set=$nb_jour_antigel;
 	}
 
 	$this->log.="Mode B :" . $this->diematicReg['MODE_B']->set." Nb Jours Antigel :" .$this->diematicReg['NB_JOUR_ANTIGEL']->set. "\n";
