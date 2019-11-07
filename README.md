@@ -83,4 +83,12 @@ This page allows you to control temperature settings, time and date settings (sy
 
 <h3>Limitations</h3>
 
-With this release 313 (boiler bought end of 2006)
+With this release 313 (boiler bought end of 2006), and this version 1.2 of pages following limitation can be observed :
+- when the boiler mode is modified on the page web, it is taken into account and displayed on the boiler panel, but not on the remote control panel for mode different from antifreeze. A push on the mode button of the remote crontrol allow to refresh it.
+
+<h3>Miscellaneous</h3>
+I've not been successfull to be able to modify the heating program to use ( P1..P4) or to set a temporary antifreeze mode for a given number of day.
+
+The call of url index.php?log=1 allows to display log of ModBus data exchanged.
+
+For further info you can go to [Fibaro forum](https://www.domotique-fibaro.fr/topic/5677-de-dietrich-diematic-isystem/)
