@@ -79,5 +79,8 @@ Then if you click on "Parametres" (soory it's in french) you get:
 
 ![Setting Page](ReadMeImages/Param.png)
 
+This page allows you to control temperature settings, time and date settings (synchro on server time), and to get something which seems to be regulator software version (313 in this case).
 
+<h3>Limitations</h3>
 
+With this release 313 (boiler bought end of 2006)
