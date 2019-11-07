@@ -38,4 +38,8 @@ as at the beginning I was not sure to achieved something usable.
 It's why I chose to use following elements :
 - an interface card USR-TCP-232-24, replaced later by an USR-TCP-232-306 which is delivered in an enclosure and has bigger range for power supply voltage. USR-TCP-232-306 specifications can be found on USR-IOT website and bought averywhere. The interface RS485 port is connected on the ModBus port of the Boiler on on side and to the LAN on the other side. If you need it, you can use some WIFI version.
 - my already exist NAS server, running an apache server with a php (5.3) module. Now, the NAS could be replaced by a Rapsberry.
-- some pĥp scripts to send user commands to the boiler, get back its status and display it to the user. Writing these script will be the main time consumming task, assuming that the descrition of boiler ModBus registers is very poor
+- some pĥp scripts to send user commands to the boiler, get back its status and display it to the user. Writing these script will be the main time consumming task, assuming that the descrition of boiler ModBus registers is very poor.
+
+Internet box settings to allow external access to the NAS while complying with good security practice wont be described here. Several solutions can be used according your paranoid status.
+
+![Web Interface Design](ReadMeImages/DiematicWebInterfaceDesign.png)
