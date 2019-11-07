@@ -28,4 +28,4 @@ ModBus rely on data exchange on a serial bus. The Diematic 3 implementation is d
 One specifity of the De Dietrich implementation is the dual-master :
     The boiler transmit ModBus command during 5s as a ModBus master and then remain silent during 5 next seconds  waiting for possible ModBus commandas slave (address: 0x0A).
 
-This particularty will have some impact on the behviour of our system : reponse time will be between 5 and 10 s (5s waiting for boiler slave mode followed by the data transmission)
+This particularty will have some impact on the behviour of our system : reponse time will be between 5 and 10 s (5s waiting for boiler slave mode followed by the data transmission).
