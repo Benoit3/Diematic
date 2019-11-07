@@ -63,5 +63,15 @@ Remark : I let you read the doc to configure IP parameters of the USR-TCP-232-30
 You need to use an Apache/PHP server, pages have been tested with PHP 5.3. Socket module shall be activated.
 Script are available [here](web/)
 
+You just need to copy file in the web directory of your apache server and 2 set 4 parameters in the index.php file :
+- time zone to use the clock setup feature
+- ip address of the USR module
+- port of the module (20108 by default)
+- default heater circuit of your boiler ( A (default), B or C)
+
+You are now able to browse the index.php page with your favorite browser. Less than 10 seconds later should obtain such result:
+
+![Control Page](ReadMeImages/CtrlA.png)
+
 
 
