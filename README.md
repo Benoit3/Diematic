@@ -4,11 +4,11 @@ The goal is to be able to control boiler's general setting with a smartphone.
 
 Reminder : Diematic 3 regulator has a built-in control board like :
 
-[ReadMeImages/DiematicRegul.png]
+![Diematic 3 Regulation Control Panel](ReadMeImages/DiematicRegul.png)
 
 And a remote control board like :
 
-[ReadMeImages/DiematicCdA.png]
+![Diematic 3 Remote Control](ReadMeImages/DiematicCdA.png)
 
 I remind that if you use information and software available in this repository, It's mean that you feel enough qualified to manage what you are doing and its impacts.
 
