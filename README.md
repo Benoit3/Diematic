@@ -73,5 +73,11 @@ You are now able to browse the index.php page with your favorite browser. Less t
 
 ![Control Page](ReadMeImages/CtrlA.png)
 
+This page allows you to control your boiler status and to modify it.
+
+Then if you click on "Parametres" (soory it's in french) you get:
+
+![Setting Page](ReadMeImages/Param.png)
+
 
 
