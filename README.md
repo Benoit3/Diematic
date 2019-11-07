@@ -29,3 +29,11 @@ One specifity of the De Dietrich implementation is the dual-master :
     The boiler transmit ModBus command during 5s as a ModBus master and then remain silent during 5 next seconds  waiting for possible ModBus commandas slave (address: 0x0A).
 
 This particularty will have some impact on the behviour of our system : reponse time will be between 5 and 10 s (5s waiting for boiler slave mode followed by the data transmission).
+
+My main requirements to design the solution were:
+- to not spend too much time
+- to not spend too much money
+as at the beginning I was not sure to achieved something usable.
+
+It's why I chose to use following elements :
+- an interface card USR-TCP-232-24, replaced later by an USR-TCP-232-306 which is delivered in an enclosure and has bigger range for power supply voltage. USR-TCP-232-306 specifications can be found on USR-IOT website and bought averywhere
