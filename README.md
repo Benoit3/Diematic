@@ -43,3 +43,9 @@ It's why I chose to use following elements :
 Internet box settings to allow external access to the NAS while complying with good security practice wont be described here. Several solutions can be used according your paranoid status.
 
 ![Web Interface Design](ReadMeImages/DiematicWebInterfaceDesign.png)
+
+<h3>Wiring making</h3>
+
+You can start with wiring the USR-TCP-232-410 to the boiler using a 2 wire cable and a mini DIN connector with four pins. The cable schematic is below:
+
+![ModBus wiring](ReadMeImages/ModBusMiniDinConnection.png)
