@@ -44,8 +44,16 @@ Internet box settings to allow external access to the NAS while complying with g
 
 ![Web Interface Design](ReadMeImages/DiematicWebInterfaceDesign.png)
 
-<h3>Wiring making</h3>
+<h3>Making of</h3>
 
-You can start with wiring the USR-TCP-232-410 to the boiler using a 2 wire cable and a mini DIN connector with four pins. The cable schematic is below:
+You can start with wiring the USR-TCP-232-306 to the boiler using a 2 wire cable and a mini DIN connector with four pins. The cable schematic is below:
 
 ![ModBus wiring](ReadMeImages/ModBusMiniDinConnection.png)
+
+You can now go on with setting the USR-TCP-232-306 with a standard web brother :
+
+![USR-TCP-232-306 setup](ReadMeImages/USR-TCP232-306-config.png)
+
+Remark : I let you read the doc to configure IP parameters of the USR-TCP-232-306. The TCP server address of the above page is not used
+
+
