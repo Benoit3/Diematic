@@ -238,23 +238,45 @@ while ($i<500){
 		//mode A setting
 		if (isset($this->diematicReg['MODE_A']->set)) {
 			//set the new mode
-			//workaround to warranty activation of permanent antiice
 			if ($this->diematicReg['MODE_A']->set==self::ANTIICE) {
+				//workaround to warranty activation of permanent antifreeze
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
+				usleep(500000);
+				//set antifreeze
+				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);$this->log.=$this->modBus->log;
+			}
+			else {
+				//update new mode + workaround for remote control update
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);$this->log.=$this->modBus->log;
+				$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);$this->log.=$this->modBus->log;
+				usleep(500000);
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);$this->log.=$this->modBus->log;
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
 			}
-			$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_A']);$this->log.=$this->modBus->log;
 		}
 
 		//mode B setting
 		if (isset($this->diematicReg['MODE_B']->set)) {
 			//set the new mode
-			//workaround to warranty activation of permanent antiice
-			if ($this->diematicReg['MODE_B']->set & self::ANTIICE ==self::ANTIICE) {
+			if ($this->diematicReg['MODE_B']->set==self::ANTIICE) {
+				//workaround to warranty activation of permanent antifreeze
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
+				usleep(500000);
+				//set antifreeze
+				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_B']);$this->log.=$this->modBus->log;
+			}
+			else {
+				//update new mode + workaround for remote control update
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_B']);$this->log.=$this->modBus->log;
+				$this->diematicReg['NB_JOUR_ANTIGEL']->set=1;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_B']);$this->log.=$this->modBus->log;
+				usleep(500000);
+				$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_B']);$this->log.=$this->modBus->log;
 				$this->diematicReg['NB_JOUR_ANTIGEL']->set=0;$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['NB_JOUR_ANTIGEL']);$this->log.=$this->modBus->log;
 			}
-			$this->modBus->masterTx(self::regulatorAddress,$this->diematicReg['MODE_B']);$this->log.=$this->modBus->log;
 		}
 		
 		//time setting
@@ -364,7 +386,7 @@ while ($i<500){
 		if ($this->modBus->status==0) {
 			$this->dataDecode($this->modBus->rxReg);
 		}
-	
+
 		//get 15 registers starting at reg 456
 		$this->modBus->masterRx(self::regulatorAddress,456,15);
 		$this->log.=$this->modBus->log;
