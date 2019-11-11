@@ -17,12 +17,15 @@ class ModBus {
 	const FRAME_EMPTY=1;
 	const SOCKET_ERROR=2;
 	const FRAME_ERROR=3;
-	const NOT_ADRESSED_TO_ME=4;
-	const NOT_SUPPORTED_FC=5;
-	const CRC_ERROR=6;
-	const NO_ACK=7;
-	const ADDR_ERROR=8;
-	const FC_ERROR=8;
+	const FRAME_LENGTH_ERROR=4;
+	const FRAME_TOO_SHORT=5;
+	const NOT_ADRESSED_TO_ME=6;
+	const NOT_SUPPORTED_FC=7;
+	const FRAME_TOO_LONG=8;
+	const CRC_ERROR=9;
+	const NO_ACK=10;
+	const ADDR_ERROR=11;
+	const FC_ERROR=12;
 	
 	const READ_ANALOG_HOLDING_REGISTERS=0x03;
 	const WRITE_MULTIPLE_REGISTERS=0x10;
@@ -32,7 +35,7 @@ class ModBus {
 	const FRAME_EXTRA_BYTE_ALLOWED=0x03;		//number of extra byte allowed at the end of a frame
 	
 	const REQUEST_TO_ANSWER_DELAY_STEP=20000;	// delay step between request and answer in uS
-	const REQUEST_TO_ANSWER_MAX_STEP=20;		// nb max of delay step 
+	const REQUEST_TO_ANSWER_MAX_STEP=50;		// nb max of delay step 
 	const SOCKET_MAX_BYTE_READ=0x200;			// nb max of bytes read on a socket
 	
 
@@ -55,8 +58,6 @@ return($this->status);
 
 //function used to receive data in (slave mode)
 function slaveRx() {
-	//Init log
-	$this->log="Slave RX:\n";
 
 	//init
 	$this->rxReg=array();
@@ -64,8 +65,10 @@ function slaveRx() {
 	$this->status=0;
 	
 	$this->rxBuf = socket_read($this->socket, self::SOCKET_MAX_BYTE_READ);
+	//log
+	$this->log="Slave RX (".strlen($this->rxBuf)."):";
 	$this->log.=bin2hex($this->rxBuf). " : " ;
-	
+
 	//check socket result
 	if ($this->rxBuf===FALSE) {
 		$this->log.="SOCKET_ERROR\n";
@@ -80,8 +83,8 @@ function slaveRx() {
 	
 	//check rough length
 	if ((strlen($this->rxBuf) > self::FRAME_MAX_LENGTH)|| (strlen($this->rxBuf) < self::FRAME_MIN_LENGTH )) {
-		$this->log.="FRAME_ERROR\n";
-		return($this->status=self::FRAME_ERROR);
+		$this->log.="FRAME_LENGTH_ERROR\n";
+		return($this->status=self::FRAME_LENGTH_ERROR);
 	}
 	
 	//check modBus addr, if slave address is not 0
@@ -93,69 +96,111 @@ function slaveRx() {
 	
 	//check modbus feature
 	$fc=ord($this->rxBuf[1]);
-	if ($fc!=self::WRITE_MULTIPLE_REGISTERS) {
-		$this->log.="NOT_SUPPORTED_FC\n";
-		return($this->status=self::NOT_SUPPORTED_FC);
-	}
-	
-	//decode WRITE_MULTIPLE_REGISTERS frame
-	//decode register number 
-	if (strlen($this->rxBuf) < 9 ) {
-		$this->log.="FRAME_ERROR\n";
-		return($this->status=self::FRAME_ERROR);
-	}
-	$regNumber=ord($this->rxBuf[4])*0x100 + ord($this->rxBuf[5]);
+	switch($fc) {
+		case self::WRITE_MULTIPLE_REGISTERS;
+			//decode WRITE_MULTIPLE_REGISTERS frame
+			//decode register number
+			if (strlen($this->rxBuf) < 9 ) {
+				$this->log.="FRAME_ERROR\n";
+				return($this->status=self::FRAME_ERROR);
+			}
+			$regNumber=ord($this->rxBuf[4])*0x100 + ord($this->rxBuf[5]);
+
+			//check that byte nb is twice register number
+			if (2*$regNumber != ord($this->rxBuf[6])) {
+				$this->log.="FRAME_ERROR\n";
+				return($this->status=self::FRAME_ERROR);
+			}
+
+			//calculate waited frame length
+			$frameLength=2*$regNumber+9;
+
+			//check frame size is not too short according data volume
+			if ($frameLength > strlen($this->rxBuf)) {
+				$this->log.="FRAME_TOO_SHORT\n";
+				return($this->status=self::FRAME_TOO_SHORT);
+			}
+
+			//check frame size is not too long according data volume (3 extra byte tolerated)
+			if (($frameLength +self::FRAME_EXTRA_BYTE_ALLOWED) < strlen($this->rxBuf)) {
+				$this->log.="FRAME_TOO_LONG\n";
+				return($this->status=self::FRAME_TOO_LONG);
+			}
+
+			//check CRC
+			$crcCalc=self::calcCRC16($this->rxBuf,$frameLength-2);
+			$crc=0x100*ord($this->rxBuf[$frameLength-1])+ord($this->rxBuf[$frameLength-2]);
+			if ($crc!= $crcCalc) {
+				$this->log.="CRC_ERROR\n";
+				return($this->status=self::CRC_ERROR);
+			}
+
+			//The frame is correct : save values and send an ack
+			$regAddr=0x100*ord($this->rxBuf[2])+ord($this->rxBuf[3]);
+			for ($i=0;$i<$regNumber;$i++) {
+				$this->rxReg[$regAddr+$i]=0x100*ord($this->rxBuf[2*$i+7])+ord($this->rxBuf[2*$i+8]);
+			}
+			$this->log.="FRAME_OK\n";
+			$this->log.=print_r($this->rxReg,TRUE);
+
+			// set the ack content
+			$tx=substr($this->rxBuf,0,6);
+
+			// calculate and add the checksum
+			$crCalc=self::calcCRC16($tx,6);
+			$tx.=chr($crCalc & 0xFF);
+			$tx.=chr(($crCalc>>8) & 0xFF);
+			$tx.=chr(0).chr(0).chr(0);
+
+			//send the ack if slave address is not 0
+			if ($this->modBusAddr!=0) {
+					$this->log.="Ack:".bin2hex($tx)."\n";
+					$result=socket_write($this->socket, $tx);
+			}
+
+			return($this->status=0);
+		break;
 		
-	//check that byte nb is twice register number
-	if (2*$regNumber != ord($this->rxBuf[6])) {
-		$this->log.="FRAME_ERROR\n";
-		return($this->status=self::FRAME_ERROR);
+		case self::READ_ANALOG_HOLDING_REGISTERS;
+			//decode READ_ANALOG_HOLDING_REGISTERS frame
+
+			//calculate waited frame length
+			$frameLength=8;
+
+			//check frame size is not too short according data volume
+			if ($frameLength > strlen($this->rxBuf)) {
+				$this->log.="FRAME_TOO_SHORT\n";
+				return($this->status=self::FRAME_TOO_SHORT);
+			}
+			
+			//check frame size is not too long according data volume (3 extra byte tolerated)
+			if (($frameLength +self::FRAME_EXTRA_BYTE_ALLOWED) < strlen($this->rxBuf)) {
+				$this->log.="FRAME_TOO_LONG\n";
+				return($this->status=self::FRAME_TOO_LONG);
+			}
+
+			//check CRC
+			$crcCalc=self::calcCRC16($this->rxBuf,$frameLength-2);
+			$crc=0x100*ord($this->rxBuf[$frameLength-1])+ord($this->rxBuf[$frameLength-2]);
+			if ($crc!= $crcCalc) {
+				$this->log.="CRC_ERROR\n";
+				return($this->status=self::CRC_ERROR);
+			}
+
+			//The frame is correct : save values and send an ack
+			$regAddr=0x100*ord($this->rxBuf[2])+ord($this->rxBuf[3]);
+			$regNb=0x100*ord($this->rxBuf[4])+ord($this->rxBuf[5]);
+
+			$this->log.="FRAME_OK Read :".$regAddr.":".$regNb."\n";
+
+			//do not send ack as there is not data to provide
+			return($this->status=0);
+		break;
+		default:
+			$this->log.="NOT_SUPPORTED_FC :".$fc."\n";
+			return($this->status=self::NOT_SUPPORTED_FC);
 	}
-	
-	//calculate waited frame length
-	$frameLength=2*$regNumber+9;
-	
-	//check frame size is not too short according data volume
-	if ($frameLength > strlen($this->rxBuf)) {
-		$this->log.="FRAME_ERROR\n";
-		return($this->status=self::FRAME_ERROR);
-	}
-	
-	//check frame size is not too long according data volume (3 extra byte tolerated)
-	if (($frameLength +self::FRAME_EXTRA_BYTE_ALLOWED) < strlen($this->rxBuf)) {
-		$this->log.="FRAME_ERROR\n";
-		return($this->status=self::FRAME_ERROR);
-	}
-		
-	//check CRC
-	$crcCalc=self::calcCRC16($this->rxBuf,$frameLength-2);
-	$crc=0x100*ord($this->rxBuf[$frameLength-1])+ord($this->rxBuf[$frameLength-2]);
-	if ($crc!= $crcCalc) {
-		$this->log.="CRC_ERROR\n";
-		return($this->status=self::CRC_ERROR);
-	}
-	
-	//The frame is correct : save values and send an ack
-	$regAddr=0x100*ord($this->rxBuf[2])+ord($this->rxBuf[3]);
-	for ($i=0;$i<$regNumber;$i++) {
-		$this->rxReg[$regAddr+$i]=0x100*ord($this->rxBuf[2*$i+7])+ord($this->rxBuf[2*$i+8]);
-	}
-	$this->log.="FRAME_OK\n";
-	$this->log.=print_r($this->rxReg,TRUE);
-	
-	// set the ack content
-	$tx=substr($this->rxBuf,0,6);
-	
-	// calculate and add the checksum
-	$crCalc=self::calcCRC16($tx,6);
-	$tx.=chr($crCalc & 0xFF);
-	$tx.=chr(($crCalc>>8) & 0xFF);
-	$tx.=chr(0).chr(0).chr(0);
-	
-	//send the ack if slave address is not 0
-	if ($this->modBusAddr!=0) $result=socket_write($this->socket, $tx);
-	
-	return($this->status=0);
+
 }
 
 
@@ -185,7 +230,7 @@ function masterRx($modBusAddr,$regAddr,$regNb) {
 		$i++;
 	} while((($this->rxBuf===FALSE) || ($this->rxBuf=="")) && ($i< self::REQUEST_TO_ANSWER_MAX_STEP));
 	
-	$this->log.="Answer: ".bin2hex($this->rxBuf)."\n";
+	$this->log.="Answer(".strlen($this->rxBuf)."): ".bin2hex($this->rxBuf)."\n";
 	
 	//check socket result
 	if ($this->rxBuf===FALSE) {
