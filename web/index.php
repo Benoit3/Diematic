@@ -67,12 +67,12 @@ else if (($action=='Valider Temp') && ($circuit=="B")) {
 $regulator->synchro();
 
 if ($circuit=="A") {
-	if ($view=="param") echo get_include_contents("param_A.ihm.php",$regulator->diematicReg);
+	if ($view=="param") echo get_include_contents("settings_A.ihm.php",$regulator->diematicReg);
 	else echo get_include_contents("ctrl_A.ihm.php",$regulator->diematicReg);
 }
 
 if ($circuit=="B") {
-	if ($view=="param") echo get_include_contents("param_B.ihm.php",$regulator->diematicReg);
+	if ($view=="param") echo get_include_contents("settings_B.ihm.php",$regulator->diematicReg);
 	else echo get_include_contents("ctrl_B.ihm.php",$regulator->diematicReg);
 }
 
