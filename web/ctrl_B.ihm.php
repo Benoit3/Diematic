@@ -18,7 +18,7 @@
 	<tr><td>Date</td><td><?=$tableJours[$data['JOUR_SEMAINE']->value]?> <?=$data['JOUR']->value?>/<?=sprintf("%02d",$data['MOIS']->value)?>/<?=sprintf("%02d",$data['ANNEE']->value)?> <?=sprintf("%02d",$data['HEURE']->value)?>:<?=sprintf("%02d",$data['MINUTE']->value)?></td></tr>
 	<tr><td>Temp Int</td><td><?=$data['TEMP_AMB_B']->value?> °C</td></tr>
 	<tr><td>Temp Ext</td><td><?=$data['TEMP_EXT']->value?> °C</td></tr>
-	<tr><td>Pompe</td><td><?=($data['BASE_ECS']->value) & 0x10 >> 4 ?></td></tr>
+	<tr><td>Pompe</td><td><?=($data['OPTIONS_B_C']->value) & 0x10 >> 4 ?></td></tr>
 	
 	<tr><td>Temp ECS</td><td><?=$data['TEMP_ECS']->value?> °C</td></tr>
 	

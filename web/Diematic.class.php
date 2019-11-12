@@ -143,7 +143,11 @@ function __construct($ipAddr,$port) {
 	$this->diematicReg['BASE_ECS']=new StdClass();
 	$this->diematicReg['BASE_ECS']->addr=427;
 	$this->diematicReg['BASE_ECS']->type=self::BIT;
-	
+
+	$this->diematicReg['OPTIONS_B_C']=new StdClass();
+	$this->diematicReg['OPTIONS_B_C']->addr=428;
+	$this->diematicReg['OPTIONS_B_C']->type=self::BIT;
+
 	$this->diematicReg['RETURN_TEMP']=new StdClass();
 	$this->diematicReg['RETURN_TEMP']->addr=453;
 	$this->diematicReg['RETURN_TEMP']->type=self::REAL10;
