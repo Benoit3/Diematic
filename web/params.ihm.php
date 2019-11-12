@@ -15,31 +15,35 @@
 <input type="hidden" name="circuit" value="A">
 <?php $tableJours=array(1 =>'Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'); ?>
 <table>
-	<tr><td>Date</td><td><?=$tableJours[$data['JOUR_SEMAINE']->value]?> <?=$data['JOUR']->value?>/<?=sprintf("%02d",$data['MOIS']->value)?>/<?=sprintf("%02d",$data['ANNEE']->value)?> <?=sprintf("%02d",$data['HEURE']->value)?>:<?=sprintf("%02d",$data['MINUTE']->value)?></td></tr>
-	<tr><td>Type Chaudière</td><td><?=$data['BOILER_TYPE']->value?></td></tr>
-	<tr><td>CTRL (Version Soft)</td><td><?=$data['CTRL']->value?></td></tr>
-	<tr><td>Temp Int</td><td><?=$data['TEMP_AMB_A']->value?> °C</td></tr>
-	<tr><td>Temp Ext</td><td><?=$data['TEMP_EXT']->value?> °C</td></tr>
-	<tr><td>Temp ECS</td><td><?=$data['TEMP_ECS']->value?> °C</td></tr>
-	<tr><td>Pompe A</td><td><?=($data['BASE_ECS']->value & 0x10) >> 4 ?></td></tr>
-	<tr><td>Pompe B</td><td><?=($data['OPTIONS_B_C']->value & 0x10) >> 4 ?></td></tr>
-	<tr><td>Puiss Pompe</td><td><?=$data['PUMP_POWER']->value ?></td></tr>
-	<tr><td>Bruleur</td><td><?=($data['BASE_ECS']->value & 0x08) >> 3 ?></td></tr>
-	<tr><td>Vitesse Ventilateur</td><td><?=$data['FAN_SPEED']->value?></td></tr>
-	<tr><td>Temp Chaud Mesure/Cible</td><td><?=$data['TEMP_CHAUD']->value?> °C / <?=$data['TCALC_A']->value?> °C</td></tr>
-	<tr><td>Temp Retour</td><td><?=$data['RETURN_TEMP']->value?> °C</td></tr>
-	<tr><td>Temp Fumées</td><td><?=$data['SMOKE_TEMP']->value?> °C</td></tr>
-	<tr><td>Press Eau</td><td><?=$data['PRESSION_EAU']->value?> Bar</td></tr>
+	<tr><td>Date</td><td><?=$tableJours[$data->reg['JOUR_SEMAINE']->value]?> <?=$data->reg['JOUR']->value?>/<?=sprintf("%02d",$data->reg['MOIS']->value)?>/<?=sprintf("%02d",$data->reg['ANNEE']->value)?> <?=sprintf("%02d",$data->reg['HEURE']->value)?>:<?=sprintf("%02d",$data->reg['MINUTE']->value)?></td></tr>
+	<tr><td>Type Chaudière</td><td><?=$data->reg['BOILER_TYPE']->value?></td></tr>
+	<tr><td>CTRL (Version Soft)</td><td><?=$data->reg['CTRL']->value?></td></tr>
+	<tr><td>Temp Int</td><td><?=$data->reg['TEMP_AMB_A']->value?> °C</td></tr>
+	<tr><td>Temp Ext</td><td><?=$data->reg['TEMP_EXT']->value?> °C</td></tr>
+	<tr><td>Temp ECS</td><td><?=$data->reg['TEMP_ECS']->value?> °C</td></tr>
+	<tr><td>Pompe A</td><td><?=($data->reg['BASE_ECS']->value & 0x10) >> 4 ?></td></tr>
+	<tr><td>Pompe B</td><td><?=($data->reg['OPTIONS_B_C']->value & 0x10) >> 4 ?></td></tr>
+	<tr><td>Pompe ECS</td><td><?=($data->reg['BASE_ECS']->value & 0x20) >> 5 ?></td></tr>
+	<tr><td>Puiss Pompe</td><td><?=$data->reg['PUMP_POWER']->value ?></td></tr>
+	<tr><td>Bruleur</td><td><?=($data->reg['BASE_ECS']->value & 0x08) >> 3 ?></td></tr>
+	<tr><td>Vitesse Ventilateur</td><td><?=$data->reg['FAN_SPEED']->value?></td></tr>
+	<tr><td>Etat A</td><td><?=$data->boiler_mode_A?></td></tr>
+	<tr><td>Etat B</td><td><?=$data->boiler_mode_B?></td></tr>
+	<tr><td>Puiss Bruleur</td><td><?=$data->burner_power?>%</td></tr>
+	<tr><td>Temp Chaud Mesure/Cible</td><td><?=$data->reg['TEMP_CHAUD']->value?> °C / <?=$data->reg['TCALC_A']->value?> °C</td></tr>
+	<tr><td>Temp Retour</td><td><?=$data->reg['RETURN_TEMP']->value?> °C</td></tr>
+	<tr><td>Temp Fumées</td><td><?=$data->reg['SMOKE_TEMP']->value?> °C</td></tr>
+	<tr><td>Press Eau</td><td><?=$data->reg['PRESSION_EAU']->value?> Bar</td></tr>
 
 	<tr><td>Alarme</td>
-		<?= (($data['ALARME']->value!=0) ? '<td style="color:red" >' : '<td>')  ?>
-		<?=$data['ALARME']->value?>
-		<?= (($data['ALARME']->value==10) ? '<br/> Défaut Sonde Retour' : '')  ?>
-		<?= (($data['ALARME']->value==21) ? '<br/> Pression d\'eau basse' : '')  ?>
-		<?= (($data['ALARME']->value==26) ? '<br/> Défaut Allumage' : '')  ?>
-		<?= (($data['ALARME']->value==28) ? '<br/> STB Chaudière' : '')  ?>
-		<?= (($data['ALARME']->value==30) ? '<br/> Rearm. Coffret' : '')  ?>
-		<?= (($data['ALARME']->value==31) ? '<br/> Défaut Sonde Fumée' : '')  ?>
+		<?= (($data->reg['ALARME']->value!=0) ? '<td style="color:red" >' : '<td>')  ?>
+		<?=$data->reg['ALARME']->value?>
+		<?= (($data->reg['ALARME']->value==10) ? '<br/> Défaut Sonde Retour' : '')  ?>
+		<?= (($data->reg['ALARME']->value==21) ? '<br/> Pression d\'eau basse' : '')  ?>
+		<?= (($data->reg['ALARME']->value==26) ? '<br/> Défaut Allumage' : '')  ?>
+		<?= (($data->reg['ALARME']->value==28) ? '<br/> STB Chaudière' : '')  ?>
+		<?= (($data->reg['ALARME']->value==30) ? '<br/> Rearm. Coffret' : '')  ?>
+		<?= (($data->reg['ALARME']->value==31) ? '<br/> Défaut Sonde Fumée' : '')  ?>
 		</td>
 	</tr>
 	

@@ -4,6 +4,12 @@ $modbus_ip='192.168.9.18';
 $modbus_port=20108;
 $circuit_defaut="A";
 
+
+//FAN 
+const FAN_SPEED_MIN=1000;
+const FAN_SPEED_MAX=6000;
+
+
 require_once("Diematic.class.php");
 
 //get values for parameters
@@ -66,16 +72,41 @@ else if (($action=='Valider Temp') && ($circuit=="B")) {
 //request data synchro
 $regulator->synchro();
 
+//get boiler_mode for circuit A
+//if PUMP_A is ON
+if (($regulator->diematicReg['BASE_ECS']->value & 0x10) !=0) $boiler_mode_A=1;
+//else ....(workaround bug on BASE_ECS bit 5 (pump ecs) which is ot always set to 1)
+elseif ((($regulator->diematicReg['BASE_ECS']->value & 0x20) !=0) || (($regulator->diematicReg['PUMP_POWER']->value==100) && ($regulator->diematicReg['FAN_SPEED']->value > FAN_SPEED_MIN ))) $boiler_mode_A=2;
+else $boiler_mode_A=0;
+
+//get boiler_mode for circuit B
+//if PUMP_B is ON
+if (($regulator->diematicReg['OPTIONS_B_C']->value & 0x10) !=0) $boiler_mode_B=1;
+//else if pump ECS is ON
+elseif (($regulator->diematicReg['BASE_ECS']->value & 0x20) !=0)  $boiler_mode_B=2;
+else $boiler_mode_B=0;
+
+//get burner power from fan speed
+if ($regulator->diematicReg['FAN_SPEED']->value > FAN_SPEED_MIN ) $burner_power=round (($regulator->diematicReg['FAN_SPEED']->value / FAN_SPEED_MAX)*100);
+else $burner_power=0;
+
+//add parameters to the regulator object
+$boiler=new StdClass();
+$boiler->boiler_mode_A=$boiler_mode_A;
+$boiler->boiler_mode_B=$boiler_mode_B;
+$boiler->burner_power=$burner_power;
+$boiler->reg=$regulator->diematicReg;
+
 if ($circuit=="A") {
-	if ($view=="set") echo get_include_contents("settings_A.ihm.php",$regulator->diematicReg);
-	elseif ($view=="param") echo get_include_contents("params.ihm.php",$regulator->diematicReg);
-	else echo get_include_contents("ctrl_A.ihm.php",$regulator->diematicReg);
+	if ($view=="set") echo get_include_contents("settings_A.ihm.php",$boiler);
+	elseif ($view=="param") echo get_include_contents("params.ihm.php",$boiler);
+	else echo get_include_contents("ctrl_A.ihm.php",$boiler);
 }
 
 if ($circuit=="B") {
-	if ($view=="set") echo get_include_contents("settings_B.ihm.php",$regulator->diematicReg);
-	elseif ($view=="param") echo get_include_contents("params.ihm.php",$regulator->diematicReg);
-	else echo get_include_contents("ctrl_B.ihm.php",$regulator->diematicReg);
+	if ($view=="set") echo get_include_contents("settings_B.ihm.php",$boiler);
+	elseif ($view=="param") echo get_include_contents("params.ihm.php",$boiler);
+	else echo get_include_contents("ctrl_B.ihm.php",$boiler);
 }
 
 if ($log==1) echo "<PRE>",$regulator->log,"</PRE>";		
