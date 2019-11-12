@@ -243,7 +243,7 @@ while ($i<500){
 		if ($this->modBus->status==0) $this->dataDecode($this->modBus->rxReg);
 		
 		//update bus status if no traffic during 1s
-		if ($silentDetection>=11) $busStatus=1;
+		if ($silentDetection>=12) $busStatus=1;
 		
 		//or wait 100 ms
 		usleep(100000);
