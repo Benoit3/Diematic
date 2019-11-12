@@ -10,7 +10,7 @@
 
 <body>
 
-<h1>Chauffage</h1>
+<h1>Chauffage Circuit A</h1>
 <form method="post" action="">
 <input type="hidden" name="circuit" value="A">
 <?php $tableJours=array(1 =>'Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'); ?>
@@ -21,7 +21,6 @@
 	<tr><td>Cons. Antigel</td><td><input type="text" name="cons_antigel_a" maxlength="4" size="4" value="<?=$data['CONS_ANTIGEL_A']->value?>"> °C</td></tr>
 	<tr><td>Cons. ECS Jour</td><td><input type="text" name="cons_ecs" maxlength="4" size="4" value="<?=$data['CONS_ECS']->value?>"> °C</td></tr>
 	<tr><td>Cons. ECS Nuit</td><td><input type="text" name="cons_ecs_nuit" maxlength="4" size="4" value="<?=$data['CONS_ECS_NUIT']->value?>"> °C</td></tr>
-	<tr><td>CTRL (Version Soft)</td><td><?=$data['CTRL']->value?></td></tr>
 	<tr>
 		<td><div style="text-align:left"><input type="submit" name="submit" value="Synchro Heure"></div></td>
 		<td><div style="text-align:left"><input type="submit" name="submit" value="Refresh"></div></td>
@@ -33,7 +32,7 @@
 </table>
 
 </form>
-<p><a href="index.php?view=page1&circuit=A">Panneau de Contrôle</a></p>
+<p><a href="index.php?view=page1&circuit=A">Panneau de Contrôle</a> <a href="index.php?view=param&circuit=A">Paramètres</a></p>
 </body>
 </html>
 

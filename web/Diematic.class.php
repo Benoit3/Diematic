@@ -6,10 +6,6 @@
 //	Licence :  Creative Commons  Attribution - Pas d'Utilisation Commerciale     //
 //              Partage dans les Mêmes Conditions 3.0 France (CC BY-NC-SA 3.0 FR)//
 //                                                                               //
-//                                                                               //
-//   Date     | Version |    Auteur     | Nature de la modification              //
-// 12/11/2015 |  1.0.0  | Domip         | Creation                               //
-//            |         |               |                                        //
 //*******************************************************************************//
 require_once("ModBus.class.php");
 
@@ -18,7 +14,7 @@ class Diematic
 
 //Adress
 	const regulatorAddress=0x0A;
-	const slaveAddress=0;
+	const slaveAddress=0x00;
 	
 // ModBus Register Types
 	const REAL10=0;
@@ -128,10 +124,6 @@ function __construct($ipAddr,$port) {
 	$this->diematicReg['TEMP_CHAUD']->addr=75;
 	$this->diematicReg['TEMP_CHAUD']->type=self::REAL10;
 	
-	$this->diematicReg['BASE_ECS']=new StdClass();
-	$this->diematicReg['BASE_ECS']->addr=89;
-	$this->diematicReg['BASE_ECS']->type=self::BIT;
-	
 	$this->diematicReg['CONS_ECS_NUIT']=new StdClass();
 	$this->diematicReg['CONS_ECS_NUIT']->addr=96;
 	$this->diematicReg['CONS_ECS_NUIT']->type=self::REAL10;
@@ -147,22 +139,38 @@ function __construct($ipAddr,$port) {
 	$this->diematicReg['ANNEE']=new StdClass();
 	$this->diematicReg['ANNEE']->addr=110;
 	$this->diematicReg['ANNEE']->type=self::INTEGER;
+		
+	$this->diematicReg['BASE_ECS']=new StdClass();
+	$this->diematicReg['BASE_ECS']->addr=427;
+	$this->diematicReg['BASE_ECS']->type=self::BIT;
+	
+	$this->diematicReg['RETURN_TEMP']=new StdClass();
+	$this->diematicReg['RETURN_TEMP']->addr=453;
+	$this->diematicReg['RETURN_TEMP']->type=self::REAL10;
+	
+	$this->diematicReg['SMOKE_TEMP']=new StdClass();
+	$this->diematicReg['SMOKE_TEMP']->addr=454;
+	$this->diematicReg['SMOKE_TEMP']->type=self::REAL10;
+	
+	$this->diematicReg['FAN_SPEED']=new StdClass();
+	$this->diematicReg['FAN_SPEED']->addr=455;
+	$this->diematicReg['FAN_SPEED']->type=self::INTEGER;
 	
 	$this->diematicReg['PRESSION_EAU']=new StdClass();
 	$this->diematicReg['PRESSION_EAU']->addr=456;
 	$this->diematicReg['PRESSION_EAU']->type=self::REAL10;
 	
+	$this->diematicReg['BOILER_TYPE']=new StdClass();
+	$this->diematicReg['BOILER_TYPE']->addr=457;
+	$this->diematicReg['BOILER_TYPE']->type=self::INTEGER;
+	
+	$this->diematicReg['PUMP_POWER']=new StdClass();
+	$this->diematicReg['PUMP_POWER']->addr=463;
+	$this->diematicReg['PUMP_POWER']->type=self::INTEGER;
+	
 	$this->diematicReg['ALARME']=new StdClass();
 	$this->diematicReg['ALARME']->addr=465;
 	$this->diematicReg['ALARME']->type=self::BIT;
-		
-	$this->diematicReg['QQ']=new StdClass();
-	$this->diematicReg['QQ']->addr=279;
-	$this->diematicReg['QQ']->type=self::INTEGER;
-
-	$this->diematicReg['MM']=new StdClass();
-	$this->diematicReg['MM']->addr=280;
-	$this->diematicReg['MM']->type=self::INTEGER;
 	
 	$this->log.="Connexion Status: ".$this->modBus->status."\n";
 	
@@ -200,6 +208,14 @@ $busStatus=0; 			//bus is in slave mode
 $silentDetection=-1;	//wait for a frame
 $i=0;
 
+//empty reception buffer
+//wait 100 ms
+usleep(100000);
+do {
+	$this->modBus->slaveRx();
+	$this->log.=$this->modBus->log; }
+while ( !(($this->modBus->status==ModBus::FRAME_EMPTY) || ($this->modBus->status==ModBus::SOCKET_ERROR))) ;
+	$this->log.="Buffer empty\n";
 
 while ($i<500){ 
 	//slave mode
@@ -213,7 +229,7 @@ while ($i<500){
 		$this->log.=$this->modBus->log;
 		
 		//arm silent detection on first frame received
-		if ( ($silentDetection==-1) && ( ($this->modBus->status==0) || ($this->modBus->status==ModBus::NOT_SUPPORTED_FC))) $silentDetection=0;
+		if ( ($silentDetection==-1) && ( ($this->modBus->status==0) || ($this->modBus->status==ModBus::NOT_SUPPORTED_FC) || ($this->modBus->status==ModBus::NOT_ADRESSED_TO_ME))) $silentDetection=0;
 		//update silent detection following context
 		if ($silentDetection>=0) {
 			if (($this->modBus->status==ModBus::FRAME_EMPTY) || ($this->modBus->status==ModBus::SOCKET_ERROR)) $silentDetection++; else $silentDetection=0;
@@ -223,7 +239,7 @@ while ($i<500){
 		if ($this->modBus->status==0) $this->dataDecode($this->modBus->rxReg);
 		
 		//update bus status if no traffic during 1s
-		if ($silentDetection>=10) $busStatus=1;
+		if ($silentDetection>=11) $busStatus=1;
 		
 		//or wait 100 ms
 		usleep(100000);
@@ -357,38 +373,48 @@ while ($i<500){
 		
 		//get 64 registers starting at reg 64
 		$this->modBus->masterRx(self::regulatorAddress,64,64);
-		//$this->modBus->masterRx(self::regulatorAddress,59,4);
 		$this->log.=$this->modBus->log;
 		if ($this->modBus->status==0) {
 			$this->dataDecode($this->modBus->rxReg);
 		}
 
 		//get 64 registers starting at reg 128
-		$this->modBus->masterRx(self::regulatorAddress,128,64);
-		//$this->modBus->masterRx(self::regulatorAddress,59,4);
-		$this->log.=$this->modBus->log;
-		if ($this->modBus->status==0) {
-			$this->dataDecode($this->modBus->rxReg);
-		}
+		//$this->modBus->masterRx(self::regulatorAddress,128,64);
+		//$this->log.=$this->modBus->log;
+		//if ($this->modBus->status==0) {
+			//$this->dataDecode($this->modBus->rxReg);
+		//}
 
 		//get 64 registers starting at reg 196
-		$this->modBus->masterRx(self::regulatorAddress,196,64);
-		//$this->modBus->masterRx(self::regulatorAddress,59,4);
-		$this->log.=$this->modBus->log;
-		if ($this->modBus->status==0) {
-			$this->dataDecode($this->modBus->rxReg);
-		}
+		//$this->modBus->masterRx(self::regulatorAddress,192,64);
+		//$this->log.=$this->modBus->log;
+		//if ($this->modBus->status==0) {
+			//$this->dataDecode($this->modBus->rxReg);
+		//}
 
 		//get 64 registers starting at reg 256
-		$this->modBus->masterRx(self::regulatorAddress,256,64);
-		//$this->modBus->masterRx(self::regulatorAddress,59,4);
+		//$this->modBus->masterRx(self::regulatorAddress,256,64);
+		//$this->log.=$this->modBus->log;
+		//if ($this->modBus->status==0) {
+			//$this->dataDecode($this->modBus->rxReg);
+		//}
+		
+		//get 64 registers starting at reg 320
+		//$this->modBus->masterRx(self::regulatorAddress,320,64);
+		//$this->log.=$this->modBus->log;
+		//if ($this->modBus->status==0) {
+			//$this->dataDecode($this->modBus->rxReg);
+		//}
+
+		//get 64 registers starting at reg 384
+		$this->modBus->masterRx(self::regulatorAddress,384,64);
 		$this->log.=$this->modBus->log;
 		if ($this->modBus->status==0) {
 			$this->dataDecode($this->modBus->rxReg);
 		}
-
-		//get 15 registers starting at reg 456
-		$this->modBus->masterRx(self::regulatorAddress,456,15);
+		
+		//get 23 last registers starting at reg 448
+		$this->modBus->masterRx(self::regulatorAddress,448,23);
 		$this->log.=$this->modBus->log;
 		if ($this->modBus->status==0) {
 			$this->dataDecode($this->modBus->rxReg);
