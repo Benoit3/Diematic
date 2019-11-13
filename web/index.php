@@ -3,6 +3,7 @@ date_default_timezone_set('Europe/Paris');
 $modbus_ip='192.168.9.18';
 $modbus_port=20108;
 $circuit_defaut="A";
+$language='fr';
 
 
 //FAN 
@@ -98,15 +99,15 @@ $boiler->burner_power=$burner_power;
 $boiler->reg=$regulator->diematicReg;
 
 if ($circuit=="A") {
-	if ($view=="set") echo get_include_contents("settings_A.ihm.php",$boiler);
-	elseif ($view=="param") echo get_include_contents("params.ihm.php",$boiler);
-	else echo get_include_contents("ctrl_A.ihm.php",$boiler);
+	if ($view=="set") echo get_include_contents("$language/settings_A.ihm.php",$boiler);
+	elseif ($view=="param") echo get_include_contents("$language/params.ihm.php",$boiler);
+	else echo get_include_contents("$language/ctrl_A.ihm.php",$boiler);
 }
 
 if ($circuit=="B") {
-	if ($view=="set") echo get_include_contents("settings_B.ihm.php",$boiler);
-	elseif ($view=="param") echo get_include_contents("params.ihm.php",$boiler);
-	else echo get_include_contents("ctrl_B.ihm.php",$boiler);
+	if ($view=="set") echo get_include_contents("$language/settings_B.ihm.php",$boiler);
+	elseif ($view=="param") echo get_include_contents("$language/params.ihm.php",$boiler);
+	else echo get_include_contents("$language/ctrl_B.ihm.php",$boiler);
 }
 
 if ($log==1) echo "<PRE>",$regulator->log,"</PRE>";		

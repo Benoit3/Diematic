@@ -14,6 +14,7 @@
 <form method="post" action="">
 <input type="hidden" name="circuit" value="A">
 <?php $tableJours=array(1 =>'Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'); ?>
+<?php $boilerMode=array('Veille','Chauffage','Chauffe Eau'); ?>
 <table>
 	<tr><td>Date</td><td><?=$tableJours[$data->reg['JOUR_SEMAINE']->value]?> <?=$data->reg['JOUR']->value?>/<?=sprintf("%02d",$data->reg['MOIS']->value)?>/<?=sprintf("%02d",$data->reg['ANNEE']->value)?> <?=sprintf("%02d",$data->reg['HEURE']->value)?>:<?=sprintf("%02d",$data->reg['MINUTE']->value)?></td></tr>
 	<tr><td>Type Chaudière</td><td><?=$data->reg['BOILER_TYPE']->value?></td></tr>
@@ -24,12 +25,12 @@
 	<tr><td>Pompe A</td><td><?=($data->reg['BASE_ECS']->value & 0x10) >> 4 ?></td></tr>
 	<tr><td>Pompe B</td><td><?=($data->reg['OPTIONS_B_C']->value & 0x10) >> 4 ?></td></tr>
 	<tr><td>Pompe ECS</td><td><?=($data->reg['BASE_ECS']->value & 0x20) >> 5 ?></td></tr>
-	<tr><td>Puiss Pompe</td><td><?=$data->reg['PUMP_POWER']->value ?></td></tr>
+	<tr><td>Puiss Pompe</td><td><?=$data->reg['PUMP_POWER']->value ?> %</td></tr>
 	<tr><td>Bruleur</td><td><?=($data->reg['BASE_ECS']->value & 0x08) >> 3 ?></td></tr>
-	<tr><td>Vitesse Ventilateur</td><td><?=$data->reg['FAN_SPEED']->value?></td></tr>
-	<tr><td>Etat A</td><td><?=$data->boiler_mode_A?></td></tr>
-	<tr><td>Etat B</td><td><?=$data->boiler_mode_B?></td></tr>
-	<tr><td>Puiss Bruleur</td><td><?=$data->burner_power?>%</td></tr>
+	<tr><td>Vitesse Ventilateur</td><td><?=$data->reg['FAN_SPEED']->value?> tr/mn </td></tr>
+	<tr><td>Etat A</td><td><?=$boilerMode[$data->boiler_mode_A]?></td></tr>
+	<tr><td>Etat B</td><td><?=$boilerMode[$data->boiler_mode_B]?></td></tr>
+	<tr><td>Puiss Bruleur</td><td><?=$data->burner_power?> %</td></tr>
 	<tr><td>Temp Chaud Mesure/Cible</td><td><?=$data->reg['TEMP_CHAUD']->value?> °C / <?=$data->reg['TCALC_A']->value?> °C</td></tr>
 	<tr><td>Temp Retour</td><td><?=$data->reg['RETURN_TEMP']->value?> °C</td></tr>
 	<tr><td>Temp Fumées</td><td><?=$data->reg['SMOKE_TEMP']->value?> °C</td></tr>
