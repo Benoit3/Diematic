@@ -10,7 +10,6 @@ $language='fr';
 const FAN_SPEED_MIN=1000;
 const FAN_SPEED_MAX=6000;
 
-
 require_once("Diematic.class.php");
 
 //get values for parameters
@@ -73,22 +72,23 @@ else if (($action=='Valider Temp') && ($circuit=="B")) {
 //request data synchro
 $regulator->synchro();
 
-//get boiler_mode for circuit A
-//if PUMP_A is ON
-if (($regulator->diematicReg['BASE_ECS']->value & 0x10) !=0) $boiler_mode_A=1;
-//else ....(workaround bug on BASE_ECS bit 5 (pump ecs) which is ot always set to 1)
-elseif ((($regulator->diematicReg['BASE_ECS']->value & 0x20) !=0) || (($regulator->diematicReg['PUMP_POWER']->value==100) && ($regulator->diematicReg['FAN_SPEED']->value > FAN_SPEED_MIN ))) $boiler_mode_A=2;
+//get boiler_mode for circuit A 
+//if ECS pump is on  OR pump power=100, burner off, and fan on) (workaround bug on BASE_ECS bit 5 (pump ecs) which is ot always set to 1) 
+//mode is water heater
+if ((($regulator->diematicReg['BASE_ECS']->value & 0x20) !=0) || (($regulator->diematicReg['FAN_SPEED']->value > FAN_SPEED_MIN ) && (($regulator->diematicReg['BASE_ECS']->value & 0x08)== 0))) $boiler_mode_A=2;
+//else if PUMP_A is ON, boiler mode is heater
+elseif (($regulator->diematicReg['BASE_ECS']->value & 0x10) !=0)  $boiler_mode_A=1;
 else $boiler_mode_A=0;
 
 //get boiler_mode for circuit B
-//if PUMP_B is ON
-if (($regulator->diematicReg['OPTIONS_B_C']->value & 0x10) !=0) $boiler_mode_B=1;
-//else if pump ECS is ON
-elseif (($regulator->diematicReg['BASE_ECS']->value & 0x20) !=0)  $boiler_mode_B=2;
+//if pump ECS is ON
+if (($regulator->diematicReg['BASE_ECS']->value & 0x20) !=0)  $boiler_mode_B=2;
+//else if PUMP_B is ON
+else if (($regulator->diematicReg['OPTIONS_B_C']->value & 0x10) !=0) $boiler_mode_B=1;
 else $boiler_mode_B=0;
 
-//get burner power from fan speed
-if ($regulator->diematicReg['FAN_SPEED']->value > FAN_SPEED_MIN ) $burner_power=round (($regulator->diematicReg['FAN_SPEED']->value / FAN_SPEED_MAX)*100);
+//estimate burner power from fan speed
+if ($regulator->diematicReg['FAN_SPEED']->value > FAN_SPEED_MIN ) $burner_power=10*round (($regulator->diematicReg['FAN_SPEED']->value / FAN_SPEED_MAX)*10);
 else $burner_power=0;
 
 //add parameters to the regulator object

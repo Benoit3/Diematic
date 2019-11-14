@@ -31,7 +31,7 @@
 </table>
 
 </form>
-<p><a href="index.php?view=page1&circuit=B">Panneau de Contrôle</a> <a href="index.php?view=param&circuit=B">Paramètres</a></p>
+<p><a href="index.php?view=page1&circuit=B">Panneau de Contrôle</a> <a href="index.php?view=param">Paramètres</a></p>
 </body>
 </html>
 

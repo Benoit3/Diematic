@@ -65,7 +65,7 @@
 	</td></tr>
 </table>
 </form>
-<p><a href="index.php?view=set&circuit=A">Réglages</a> <a href="index.php?view=param&circuit=A">Paramètres</a></p>
+<p><a href="index.php?view=set&circuit=A">Réglages</a> <a href="index.php?view=param">Paramètres</a></p>
 </body>
 </html>
 
