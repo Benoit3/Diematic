@@ -77,14 +77,24 @@ This page allows you to control your boiler status and to modify it.
 
 Then if you click on "Parametres" (soory it's in french) you get:
 
-![Setting Page](ReadMeImages/Param.png)
+![Setting Page](ReadMeImages/SettingsA.png)
 
-This page allows you to control temperature settings, time and date settings (synchro on server time), and to get something which seems to be regulator software version (313 in this case).
+This page allows you to control temperature settings, time and date settings (synchro on server time).
+
+![Setting Page](ReadMeImages/Param.png)
+This page allows you to display main parameters of the Diematic 3 regulator, between them the boiler type and software release (313 in this case).
 
 <h3>Limitations</h3>
 
-With this release 313 (boiler bought end of 2006), and this version 1.2 of pages following limitation can be observed :
-- when the boiler mode is modified on the page web, it is taken into account and displayed on the boiler panel, but not on the remote control panel for mode different from antifreeze. A push on the mode button of the remote crontrol allow to refresh it.
+With this release 313 (boiler bought end of 2006), and this version 1.4 of pages, previous limitations has been solved with sometimes the help of workaround. Temporary anti freezing, is no more available as it was not correctly settable through the Diematic 3 Modbus interface, but permanent antifreezing mode has replaced it. Notice that, in this case the remote control shows below display, which is normal (you can get it with the mode button selecting antifreeze during 5s) :
+![Setting Page](ReadMeImages/AniFreeze.png)
+
+Main found limitations of the Diematic 3 interfaces are :
+- update of remote display heating mode not updatable without "heavy" workaround
+- no possibility to switch between programs (P1..P4)
+- Pump ECS (water heater) info not robust
+- no possibility to use without issue temporary freezing mode
+- pump power stays at 100% when all pumps are off
 
 <h3>Miscellaneous</h3>
 I've not been successfull to be able to modify the heating program to use ( P1..P4) or to set a temporary antifreeze mode for a given number of day.
