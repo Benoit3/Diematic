@@ -82,12 +82,13 @@ Then if you click on "Parametres" (soory it's in french) you get:
 This page allows you to control temperature settings, time and date settings (synchro on server time).
 
 ![Setting Page](ReadMeImages/Param.png)
+
 This page allows you to display main parameters of the Diematic 3 regulator, between them the boiler type and software release (313 in this case).
 
 <h3>Limitations</h3>
 
 With this release 313 (boiler bought end of 2006), and this version 1.4 of pages, previous limitations has been solved with sometimes the help of workaround. Temporary anti freezing, is no more available as it was not correctly settable through the Diematic 3 Modbus interface, but permanent antifreezing mode has replaced it. Notice that, in this case the remote control shows below display, which is normal (you can get it with the mode button selecting antifreeze during 5s) :
-![Setting Page](ReadMeImages/AniFreeze.png)
+![AntiFreeze](ReadMeImages/AntiFreeze.png)
 
 Main found limitations of the Diematic 3 interfaces are :
 - update of remote display heating mode not updatable without "heavy" workaround
