@@ -30,6 +30,7 @@
 		<?= (($data->reg['ALARME']->value==10) ? '<br/> Défaut Sonde Retour' : '')  ?>
 		<?= (($data->reg['ALARME']->value==21) ? '<br/> Pression d\'eau basse' : '')  ?>
 		<?= (($data->reg['ALARME']->value==26) ? '<br/> Défaut Allumage' : '')  ?>
+		<?= (($data->reg['ALARME']->value==27) ? '<br/> Flamme Parasite' : '')  ?>
 		<?= (($data->reg['ALARME']->value==28) ? '<br/> STB Chaudière' : '')  ?>
 		<?= (($data->reg['ALARME']->value==30) ? '<br/> Rearm. Coffret' : '')  ?>
 		<?= (($data->reg['ALARME']->value==31) ? '<br/> Défaut Sonde Fumée' : '')  ?>
