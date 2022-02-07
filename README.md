@@ -1,3 +1,6 @@
+<h2>This php web pages are now deprecated and are replaced with a [MQTT interface](https://github.com/Benoit3/Diematic_to_MQTT) which can be easily connected with current domotic systems.</h2>
+
+
 <h2>Making of a web interface for a De Dietrich boiler fitted with a Diematic 3 regulator</h2>
 
 The goal is to be able to control boiler's general setting with a smartphone.
